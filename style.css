@@ -1,0 +1,21 @@
+html, body {
+    background-color: rgb(39, 39, 39);
+}
+#fen {
+    width: 530px;
+}
+#board {
+    width: 600px;
+    height: 600px;
+    background-image: url(assets/board.svg);
+    display: grid;
+    grid-template-columns: repeat(8, 75px);
+    user-select: none;
+}
+.square {
+    width: 75px;
+    height: 75px;
+}
+.selected {
+    background-color: rgba(0, 220, 0, 0.5);
+}
