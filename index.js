@@ -6,6 +6,10 @@ const displayFEN = fen => {
     for (i = 0; i < 64; i++) {
         document.getElementById('board').children[i].style.backgroundImage = ''
     }
+    for (i = 0; i < 64; i++) {
+        document.getElementById('board').children[i].classList.remove('w');
+        document.getElementById('board').children[i].classList.remove('b');
+    }
     res[1].map((square, index) => {
         switch (square) {
             case "k": {
@@ -57,9 +61,11 @@ document.getElementById('submit').onclick = () => {
         displayFEN(startpos);
         return;
     };
+    
     displayFEN('')
     displayFEN(fen);
-    let res = LoadFEN(fen)
+    let res = LoadFEN(fen);
+    if (!res) return;
     move = res[2]
 };
 const unSelectAll = () => {
