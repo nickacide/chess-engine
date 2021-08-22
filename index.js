@@ -55,19 +55,26 @@ const displayFEN = fen => {
     })
 };
 displayFEN(startpos)
-document.getElementById('submit').onclick = () => {
+const submit = () => {
     let fen = document.getElementById('fen').value;
     if (fen === 'startpos') {
         displayFEN(startpos);
         return;
     };
-    
     displayFEN('')
     displayFEN(fen);
     let res = LoadFEN(fen);
     if (!res) return;
-    move = res[2]
+    move = res[2];
+}
+document.getElementById('submit').onclick = () => {
+    submit();
 };
+document.addEventListener('keypress', () => {
+    if (document.activeElement === document.getElementById('fen')) {
+        submit();
+    }
+})
 const unSelectAll = () => {
     for (i = 0; i < 64; i++) {
         document.getElementsByClassName('square')[i].classList.remove('selected');

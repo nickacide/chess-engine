@@ -1,30 +1,4 @@
-const spaceControl = fen => {
-    if (!validateFEN(fen)) return 'invalid fen';
-    //TODO: create spaceControl return syntax:
-    //return [
-    //  whiteVision: [<squares that white's pieces 'see'>],
-    //  blackVision: [<squares that black's pieces 'see'>],
-    //  commonVision: [<squares that appear in both whiteVision and blackVision arrays>]
-    //]
-}
-const validateFEN = fen => {
-    if (fen == '') return false;
-    const tags = fen.slice(fen.indexOf(' '), fen.length);
-    const position = fen.split(" ")[0];
-    if (tags.match(/( [wb]( (?! ))((K?Q?k?q?)|-) (([a-h][1-8])|-) \d \d)/g)?.length !== 1) return false;
-    if (position.match(/[K]/g)?.length > 1 || position.match(/[k]/g)?.length > 1) return false;
-    if (position.match(/[/]/g)?.length !== 7) return false;
-    if (position.match(/[^KQBNRP/1-8]/gi)?.length > 0) return false;
-    if (position.split('/')[0].match(/p/gi)?.length > 0) return false;
-    if (position.slice(position.lastIndexOf('/') + 1, position.length).match(/p/gi)) return false;
-    const move = fen.split(" ")[1];
-    return true;
-}
-const LoadFEN = fen => {
-    if (fen.trim() === '') return;
-    if (fen === 'startpos') fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-    let isValid = validateFEN(fen);
-    if (!isValid) return;
+const board = fen => {
     let rank = 0;
     const board = [[], [], [], [], [], [], [], []];
     const board_ = [];
@@ -37,7 +11,7 @@ const LoadFEN = fen => {
         if (parseInt(iterate)) {
             for (i = 0; i < parseInt(iterate); i++) {
                 board[rank].push(' ');
-                board_.push(' ')
+                board_.push(' ');
             }
         } else if (iterate.match(/[KQBNRP]/gi)) {
             board[rank].push(iterate)
@@ -46,4 +20,73 @@ const LoadFEN = fen => {
     };
     if (board_.length !== 64) return;
     return [board, board_, move];
+}
+const inRange = index => index < 64 && index > -1 ? true : false;
+const getRank = index => 9 - Math.ceil((index + 1) / 8);
+const getFile = index => 1 + index % 8;
+const i2Coord = index => {
+    const file = index % 8;
+    const rank = getRank(index)
+    return String.fromCharCode(97 + file) + '' + rank
+}
+const pieceAt = (fen, i) => {
+    const board_ = board(fen)[1];
+    return board_[i];
+}
+const spaceControl = fen => {
+    if (!validateFEN(fen)) return 'invalid fen';
+    //TODO: create spaceControl return syntax:
+    //return [
+    //  whiteVision: [<squares that white's pieces 'see'>], //Progress: P,N,Q done
+    //  blackVision: [<squares that black's pieces 'see'>],
+    //  commonVision: [<squares that appear in both whiteVision and blackVision arrays>]
+    //]
+
+    //whiteVision
+    const whiteVision = [];
+    const board_ = board(fen)[1];
+    board_.map((piece, index) => {
+        if (piece === ' ') return;
+        //white only
+        switch (piece) {
+            case "P": {
+                // [-9, -7].map(x => {
+                //     if (Math.abs(getRank(index) - getRank(index + x)) !== 1) {return} else {if (inRange(index + x)) whiteVision.push(i2Coord(index + x))};
+                // })
+                break;
+            } case "N": {
+                // [6, 15, 10, 17, -6, -15, -10, -17].map((x, i) => {
+                //     if (Math.abs(getRank(index) - getRank(index + x)) !== (i % 2) + 1) {return} else {if (inRange(index + x))whiteVision.push(i2Coord(index + x))};
+                // })
+                break;
+            } case "Q": {
+                [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
+                    for (i = 1; i < 8; i++) {
+                        if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+                        if (board_[index + i * x] !== ' ') {
+                            whiteVision.push(i2Coord(index + i * x));
+                            return;
+                        }
+                        // if (Math.abs(getRank(index) - getRank(index + i * x)) === i) {
+                        whiteVision.push(i2Coord(index + i * x));
+                        // }
+                    }
+                })
+            }
+        }
+    });
+    return Array.from(new Set(whiteVision)).sort();
+}
+const validateFEN = fen => {
+    if (fen.trim() === '') return false;
+    if (fen.match(/^(([1-8]|[kqbnrKQBNR])+\/)(([1-8]|[kqpbrnKQPBRN])+\/){6}([1-8]|[kqbrnKQBRN]){0,8}( [wb]( (?! ))((K?Q?k?q?)|-) (([a-h][1-8])|-) (\d\d?) (\d\d?\d?))$/g)?.length !== 1) return false;
+    const position = fen.split(" ")[0];
+    if (position.match(/[K]/g)?.length !== 1 || position.match(/[k]/g)?.length !== 1) return false;
+    return true;
+}
+const LoadFEN = fen => {
+    if (fen === 'startpos') fen = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+    let isValid = validateFEN(fen);
+    if (!isValid) return;
+    return board(fen);
 };
