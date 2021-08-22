@@ -1,5 +1,11 @@
 const startpos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 let move = 'w';
+const illuminateVision = fen => {
+    const space = spaceControl(fen);
+    space[1].map(i => {
+        document.getElementById('board').children[i].classList.add('selected')
+    })
+}
 const displayFEN = fen => {
     let res = LoadFEN(fen);
     if (!res) return;
