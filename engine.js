@@ -51,62 +51,69 @@ const spaceControl = fen => {
         //white only
         switch (piece) {
             case "P": {
-                whiteVision.push(index);
-                [-9, -7].map(x => {
-                    if (Math.abs(getRank(index) - getRank(index + x)) !== 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
-                })
+                // whiteVision.push(index);
+                // [-9, -7].map(x => {
+                //     if (Math.abs(getRank(index) - getRank(index + x)) !== 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
+                // })
                 break;
             } case "N": {
-                whiteVision.push(index);
-                [6, 15, 10, 17, -6, -15, -10, -17].map((x, i) => {
-                    if (Math.abs(getRank(index) - getRank(index + x)) !== (i % 2) + 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
-                })
+                // whiteVision.push(index);
+                // [6, 15, 10, 17, -6, -15, -10, -17].map((x, i) => {
+                //     if (Math.abs(getRank(index) - getRank(index + x)) !== (i % 2) + 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
+                // })
                 break;
             } case "Q": {
-                whiteVision.push(index);
-                [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
-                    if (inRange(index + x)) whiteVision.push(index + x);
-                    for (i = 1; i < 8; i++) {
-                        if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
-                        if (board_[index + i * x] !== ' ') {
-                            whiteVision.push((index + i * x));
-                            return;
-                        }
-                        whiteVision.push((index + i * x));
-                    }
-                });
+                // whiteVision.push(index);
+                // [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
+                //     if (inRange(index + x)) whiteVision.push(index + x);
+                //     for (i = 1; i < 8; i++) {
+                //         if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+                //         if (board_[index + i * x] !== ' ') {
+                //             whiteVision.push((index + i * x));
+                //             return;
+                //         }
+                //         whiteVision.push((index + i * x));
+                //     }
+                // });
                 break;
             } case "B": {
-                whiteVision.push(index);
-                [-9, -7, 9, 7].map(x => {
-                    if (inRange(index + x)) whiteVision.push(index + x);
-                    for (i = 1; i < 8; i++) {
-                        if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
-                        if (board_[index + i * x] !== ' ') {
-                            whiteVision.push((index + i * x));
-                            return;
-                        }
-                        whiteVision.push((index + i * x));
-                    }
-                });
+                // whiteVision.push(index);
+                // [-9, -7, 9, 7].map(x => {
+                //     if (inRange(index + x)) whiteVision.push(index + x);
+                //     for (i = 1; i < 8; i++) {
+                //         if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+                //         if (board_[index + i * x] !== ' ') {
+                //             whiteVision.push((index + i * x));
+                //             return;
+                //         }
+                //         whiteVision.push((index + i * x));
+                //     }
+                // });
                 break;
             } case "K": {
-                whiteVision.push(index);
-                [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
-                    if (inRange(index + x)) whiteVision.push(index + x);
-                });
+                // whiteVision.push(index);
+                // [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
+                //     if (inRange(index + x)) whiteVision.push(index + x);
+                // });
                 break;
             } case "R": {
-                whiteVision.push(index);
-                [-8, -1, 1, 8].map(x => {
-                    if (inRange(index + x)) whiteVision.push(index + x);
+                let R1 = [-8, 1, 8];
+                let R8 = [-8, -1, 8];
+                let any = [-8, -1, 1, 8];
+                if (getFile(index) === 1) any = R1;
+                if (getFile(index) === 8) any = R8;
+                // whiteVision.push(index);
+                any.map(x => {
+                    // if (inRange(index + x)) whiteVision.push(index + x);
                     for (i = 1; i < 8; i++) {
-                        if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+                        if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) {
+                            // if (inRange(index + i * x)) whiteVision.push((index + i * x));
+                        }
                         if (board_[index + i * x] !== ' ') {
-                            whiteVision.push((index + i * x));
+                            // if (inRange(index + i * x)) whiteVision.push((index + i * x));
                             return;
                         }
-                        whiteVision.push((index + i * x));
+                        if (inRange(index + i * x)) whiteVision.push((index + i * x));
                     }
                 });
                 break;
@@ -127,7 +134,7 @@ const spaceControl = fen => {
                 [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
                     if (inRange(index + x)) blackVision.push(index + x);
                     for (i = 1; i < 8; i++) {
-                        if (getFile(index + i * x) === 8) {
+                        if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) {
                             if (inRange(index + i * x)) blackVision.push((index + i * x));
                             return;
                         }
