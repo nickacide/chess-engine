@@ -19,3 +19,9 @@ html, body {
 .selected {
     background-color: rgba(0, 220, 0, 0.5);
 }
+.blue {
+    background-color: rgba(0, 0, 220, 0.5);
+}
+.orange {
+    background-color: rgba(255, 111, 0, 0.604);
+}
