@@ -35,66 +35,54 @@ const pieceAt = (fen, i) => {
 }
 const spaceControl = fen => {
     if (!validateFEN(fen)) return 'invalid fen';
-    //TODO: create spaceControl return syntax:
-    //return [
-    //  whiteVision: [<squares that white's pieces 'see'>],
-    //  blackVision: [<squares that black's pieces 'see'>],
-    //  commonVision: [<squares that appear in both whiteVision and blackVision arrays>]
-    //]
-
-    //whiteVision
     const whiteVision = [],
         blackVision = [];
+    let commonVision = [];
     const board_ = board(fen)[1];
     board_.map((piece, index) => {
         if (piece === ' ') return;
-        //white only
         switch (piece) {
             case "P": {
-                // whiteVision.push(index);
-                // [-9, -7].map(x => {
-                //     if (Math.abs(getRank(index) - getRank(index + x)) !== 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
-                // })
+                [-9, -7].map(x => {
+                    if (Math.abs(getRank(index) - getRank(index + x)) !== 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
+                })
                 break;
             } case "N": {
-                // whiteVision.push(index);
-                // [6, 15, 10, 17, -6, -15, -10, -17].map((x, i) => {
-                //     if (Math.abs(getRank(index) - getRank(index + x)) !== (i % 2) + 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
-                // })
+                [6, 15, 10, 17, -6, -15, -10, -17].map((x, i) => {
+                    if (Math.abs(getRank(index) - getRank(index + x)) !== (i % 2) + 1) { return } else { if (inRange(index + x)) whiteVision.push((index + x)) };
+                })
                 break;
             } case "Q": {
-                // whiteVision.push(index);
-                // [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
-                //     if (inRange(index + x)) whiteVision.push(index + x);
-                //     for (i = 1; i < 8; i++) {
-                //         if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
-                //         if (board_[index + i * x] !== ' ') {
-                //             whiteVision.push((index + i * x));
-                //             return;
-                //         }
-                //         whiteVision.push((index + i * x));
-                //     }
-                // });
+                [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
+                    if (inRange(index + x)) whiteVision.push(index + x);
+                    for (i = 1; i < 8; i++) {
+                        if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+                        if (board_[index + i * x] !== ' ') {
+                            whiteVision.push((index + i * x));
+                            return;
+                        }
+                        whiteVision.push((index + i * x));
+                    }
+                });
                 break;
             } case "B": {
-                // whiteVision.push(index);
-                // [-9, -7, 9, 7].map(x => {
-                //     if (inRange(index + x)) whiteVision.push(index + x);
-                //     for (i = 1; i < 8; i++) {
-                //         if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
-                //         if (board_[index + i * x] !== ' ') {
-                //             whiteVision.push((index + i * x));
-                //             return;
-                //         }
-                //         whiteVision.push((index + i * x));
-                //     }
-                // });
+                [-9, -7, 9, 7].map(x => {
+                    if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
+                    if (inRange(index + x)) whiteVision.push(index + x);
+                    for (i = 1; i < 8; i++) {
+                        if (board_[index + i * x] !== ' ') {
+                            if (inRange(index + i * x)) whiteVision.push((index + i * x));
+                            return;
+                        }
+                        if (inRange(index + i * x)) whiteVision.push((index + i * x));
+                    }
+                });
                 break;
             } case "K": {
-                // whiteVision.push(index);
-                // [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
-                //     if (inRange(index + x)) whiteVision.push(index + x);
-                // });
+                [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
+                    if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
+                    if (inRange(index + x)) whiteVision.push(index + x);
+                });
                 break;
             } case "R": {
                 let R1 = [-8, 1, 8];
@@ -102,15 +90,14 @@ const spaceControl = fen => {
                 let any = [-8, -1, 1, 8];
                 if (getFile(index) === 1) any = R1;
                 if (getFile(index) === 8) any = R8;
-                // whiteVision.push(index);
                 any.map(x => {
-                    // if (inRange(index + x)) whiteVision.push(index + x);
+                    if (inRange(index + x)) whiteVision.push(index + x);
                     for (i = 1; i < 8; i++) {
                         if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) {
-                            // if (inRange(index + i * x)) whiteVision.push((index + i * x));
+                            if (inRange(index + i * x)) whiteVision.push((index + i * x));
                         }
                         if (board_[index + i * x] !== ' ') {
-                            // if (inRange(index + i * x)) whiteVision.push((index + i * x));
+                            if (inRange(index + i * x)) whiteVision.push((index + i * x));
                             return;
                         }
                         if (inRange(index + i * x)) whiteVision.push((index + i * x));
@@ -118,19 +105,16 @@ const spaceControl = fen => {
                 });
                 break;
             } case "p": {
-                blackVision.push(index);
                 [9, 7].map(x => {
                     if (Math.abs(getRank(index) - getRank(index + x)) !== 1) { return } else { if (inRange(index + x)) blackVision.push((index + x)) };
                 })
                 break;
             } case "n": {
-                blackVision.push(index);
                 [6, 15, 10, 17, -6, -15, -10, -17].map((x, i) => {
                     if (Math.abs(getRank(index) - getRank(index + x)) !== (i % 2) + 1) { return } else { if (inRange(index + x)) blackVision.push((index + x)) };
                 })
                 break;
             } case "q": {
-                blackVision.push(index);
                 [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
                     if (inRange(index + x)) blackVision.push(index + x);
                     for (i = 1; i < 8; i++) {
@@ -147,30 +131,36 @@ const spaceControl = fen => {
                 });
                 break;
             } case "b": {
-                blackVision.push(index);
                 [-9, -7, 9, 7].map(x => {
+                    if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
                     if (inRange(index + x)) blackVision.push(index + x);
                     for (i = 1; i < 8; i++) {
-                        if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
                         if (board_[index + i * x] !== ' ') {
-                            blackVision.push((index + i * x));
+                            if (inRange(index + i * x)) blackVision.push((index + i * x));
                             return;
                         }
-                        blackVision.push((index + i * x));
+                        if (inRange(index + i * x)) blackVision.push((index + i * x));
                     }
                 });
                 break;
             } case "k": {
-                blackVision.push(index);
                 [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
+                    if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
                     if (inRange(index + x)) blackVision.push(index + x);
                 });
                 break;
             } case "r": {
-                blackVision.push(index);
-                [-8, -1, 1, 8].map(x => {
+                let R1 = [-8, 1, 8];
+                let R8 = [-8, -1, 8];
+                let any = [-8, -1, 1, 8];
+                if (getFile(index) === 1) any = R1;
+                if (getFile(index) === 8) any = R8;
+                any.map(x => {
                     if (inRange(index + x)) blackVision.push(index + x);
                     for (i = 1; i < 8; i++) {
+                        if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) {
+                            if (inRange(index + i * x)) blackVision.push((index + i * x));
+                        }
                         if (board_[index + i * x] !== ' ') {
                             if (inRange(index + i * x)) blackVision.push((index + i * x));
                             return;
@@ -182,7 +172,8 @@ const spaceControl = fen => {
             }
         }
     });
-    return [Array.from(new Set(whiteVision)).sort(), Array.from(new Set(blackVision)).sort()];
+    commonVision = whiteVision.filter(v => blackVision.includes(v));
+    return [Array.from(new Set(whiteVision)).sort(), Array.from(new Set(blackVision)).sort(), commonVision];
 }
 const validateFEN = fen => {
     if (fen.trim() === '') return false;
