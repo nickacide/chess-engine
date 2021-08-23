@@ -11,6 +11,7 @@ const illuminateVision = fen => {
     space[2].map(i => {
         document.getElementById('board').children[i].classList.remove('selected');
         document.getElementById('board').children[i].classList.remove('blue');
+        document.getElementById('board').children[i].classList.add('orange');
     });
 }
 const displayFEN = fen => {
