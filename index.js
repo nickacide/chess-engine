@@ -2,9 +2,16 @@ const startpos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 let move = 'w';
 const illuminateVision = fen => {
     const space = spaceControl(fen);
+    space[0].map(i => {
+        document.getElementById('board').children[i].classList.add('selected');
+    });
     space[1].map(i => {
-        document.getElementById('board').children[i].classList.add('selected')
-    })
+        document.getElementById('board').children[i].classList.add('blue');
+    });
+    space[2].map(i => {
+        document.getElementById('board').children[i].classList.remove('selected');
+        document.getElementById('board').children[i].classList.remove('blue');
+    });
 }
 const displayFEN = fen => {
     let res = LoadFEN(fen);
