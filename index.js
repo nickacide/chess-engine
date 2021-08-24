@@ -1,18 +1,19 @@
 const startpos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
+let fen = startpos;
+let copy = document.getElementById('board').children;
+let boardArr = Array.prototype.slice.call(document.getElementById('board').children);
 let move = 'w';
 const illuminateVision = fen => {
     const space = spaceControl(fen);
     space[0].map(i => {
         document.getElementById('board').children[i].classList.add('selected');
     });
-    space[1].map(i => {
-        document.getElementById('board').children[i].classList.add('blue');
-    });
-    space[2].map(i => {
-        document.getElementById('board').children[i].classList.remove('selected');
-        document.getElementById('board').children[i].classList.remove('blue');
-        document.getElementById('board').children[i].classList.add('orange');
-    });
+    // space[1].map(i => {
+    //     document.getElementById('board').children[i].classList.add('blue');
+    // });
+    // space[2].map(i => {
+    //     document.getElementById('board').children[i].classList.add('orange');
+    // });
 }
 const displayFEN = fen => {
     let res = LoadFEN(fen);
@@ -70,7 +71,7 @@ const displayFEN = fen => {
 };
 displayFEN(startpos)
 const submit = () => {
-    let fen = document.getElementById('fen').value;
+    fen = document.getElementById('fen').value;
     if (fen === 'startpos') {
         displayFEN(startpos);
         return;
@@ -80,18 +81,21 @@ const submit = () => {
     let res = LoadFEN(fen);
     if (!res) return;
     move = res[2];
+    copy = document.getElementById('board').children;
+    boardArr = Array.prototype.slice.call(document.getElementById('board').children);
 }
 document.getElementById('submit').onclick = () => {
     submit();
 };
-document.addEventListener('keypress', () => {
-    if (document.activeElement === document.getElementById('fen')) {
+document.addEventListener('keypress', e => {
+    if (document.activeElement === document.getElementById('fen') && e.key === 'Enter') {
         submit();
     }
 })
 const unSelectAll = () => {
     for (i = 0; i < 64; i++) {
         document.getElementsByClassName('square')[i].classList.remove('selected');
+        document.getElementsByClassName('square')[i].classList.remove('blue');
     }
 }
 for (i = 0; i < 64; i++) {
@@ -107,8 +111,12 @@ for (i = 0; i < 64; i++) {
             } else {
                 unSelectAll()
             }
-            e.path[0].classList.add('selected')
-
+            e.path[0].classList.add('selected');
+            let index = boardArr.indexOf(e.path[0]);
+            unSelectAll()
+            getPieceMoves(fen, index).map(move => {
+                document.getElementById('board').children[move].classList.add('blue')
+            })
         } else {
             unSelectAll();
         }
