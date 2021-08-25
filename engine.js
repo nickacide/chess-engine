@@ -94,7 +94,7 @@ const getPieceMoves = (fen, index) => {
                         if (inRange(index + x)) pieceMoves.push(index + x);
                         for (i = 1; i < 8; i++) {
                             if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) return;
-                            if (board_[index + i * x] === board_[index + i * x].toLowerCase() && board_[index + i * x] !== ' ') pieceMoves.push(index + i * x);
+                            if (board_[index + i * x] && board_[index + i * x] === board_[index + i * x].toLowerCase() && board_[index + i * x] !== ' ') pieceMoves.push(index + i * x);
                             if (board_[index + i * x] !== ' ') {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
@@ -104,12 +104,19 @@ const getPieceMoves = (fen, index) => {
                     });
                     break;
                 } case "B": {
-                    [-9, -7, 9, 7].map(x => {
+                    let movesDBI = [-9, 7, 9, -7]; // Moves despite being illegal
+                    // if (getFile(index) === 1 && (getRank(index) !== 1 && getRank(index) !== 8)) movesDBI = movesDBI.slice(2, 3);
+                    // console.log(movesDBI)
+                    // if (getFile(index) === 8 && (getRank(index) !== 1 && getRank(index) !== 8)) movesDBI = movesDBI.slice(0, 2);
+                    // console.log(movesDBI)
+                    movesDBI.map(x => {
                         if (board_[index + x] !== ' ') return;
                         if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
                         for (i = 1; i < 8; i++) {
-                            if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+                            if (Math.abs(getFile(index + i * x) - getFile(index + (i - 1) * x)) !== 1) return;
+                            // if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+
                             if (board_[index + i * x] !== ' ') {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
@@ -139,6 +146,7 @@ const getPieceMoves = (fen, index) => {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                             }
                             if (board_[index + i * x] !== ' ') {
+
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
                             }
@@ -178,11 +186,12 @@ const getPieceMoves = (fen, index) => {
                     });
                     break;
                 } case "b": {
-                    if (board_[index + x] !== ' ') return;
-                    [-9, -7, 9, 7].map(x => {
+                    [9, 7, -9, -7].map(x => {
+                        if (board_[index + x] !== ' ') return;
                         if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
                         for (i = 1; i < 8; i++) {
+                            if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
                             if (board_[index + i * x] !== ' ') {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
@@ -192,20 +201,20 @@ const getPieceMoves = (fen, index) => {
                     });
                     break;
                 } case "k": {
-                    if (board_[index + x] !== ' ') return;
                     [-9, -8, -7, -1, 1, 9, 8, 7].map(x => {
+                        if (board_[index + x] !== ' ') return;
                         if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
                     });
                     break;
                 } case "r": {
-                    if (board_[index + x] !== ' ') return;
                     let R1 = [-8, 1, 8];
                     let R8 = [-8, -1, 8];
                     let any = [-8, -1, 1, 8];
                     if (getFile(index) === 1) any = R1;
                     if (getFile(index) === 8) any = R8;
                     any.map(x => {
+                        if (board_[index + x] !== ' ') return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
                         for (i = 1; i < 8; i++) {
                             if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) {
@@ -215,7 +224,7 @@ const getPieceMoves = (fen, index) => {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
                             }
-                            if (inRange(index + i * x)) blackVision.push((index + i * x));
+                            if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                         }
                     });
                     break;
