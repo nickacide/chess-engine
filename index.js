@@ -95,7 +95,7 @@ document.addEventListener('keypress', e => {
 const unSelectAll = () => {
     for (i = 0; i < 64; i++) {
         document.getElementsByClassName('square')[i].classList.remove('selected');
-        document.getElementsByClassName('square')[i].classList.remove('blue');
+        document.getElementsByClassName('square')[i].classList.remove('MoveIndicator');
     }
 }
 for (i = 0; i < 64; i++) {
@@ -106,16 +106,16 @@ for (i = 0; i < 64; i++) {
         }
         if (e.path[0].classList.contains(move)) {
             if (e.path[0].classList.contains('selected')) {
-                e.path[0].classList.remove('selected');
+                unSelectAll()
                 return;
             } else {
                 unSelectAll()
             }
+            unSelectAll()
             e.path[0].classList.add('selected');
             let index = boardArr.indexOf(e.path[0]);
-            unSelectAll()
             getPieceMoves(fen, index).map(move => {
-                document.getElementById('board').children[move].classList.add('blue')
+                document.getElementById('board').children[move].classList.add('MoveIndicator')
             })
         } else {
             unSelectAll();

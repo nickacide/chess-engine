@@ -17,10 +17,10 @@ html, body {
     height: 75px;
 }
 .selected {
-    background-color: rgba(0, 220, 0, 0.5);
+    background-color: rgb(12, 168, 12);
 }
-.blue {
-    background-color: rgba(0, 0, 220, 0.5);
+.MoveIndicator {
+    background-color: rgba(0, 255, 34, 0.5);
 }
 .orange {
     background-color: rgba(255, 111, 0, 1);
