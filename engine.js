@@ -104,12 +104,7 @@ const getPieceMoves = (fen, index) => {
                     });
                     break;
                 } case "B": {
-                    let movesDBI = [-9, 7, 9, -7]; // Moves despite being illegal
-                    // if (getFile(index) === 1 && (getRank(index) !== 1 && getRank(index) !== 8)) movesDBI = movesDBI.slice(2, 3);
-                    // console.log(movesDBI)
-                    // if (getFile(index) === 8 && (getRank(index) !== 1 && getRank(index) !== 8)) movesDBI = movesDBI.slice(0, 2);
-                    // console.log(movesDBI)
-                    movesDBI.map(x => {
+                    [-9, 7, 9, -7].map(x => {
                         if (board_[index + x] !== ' ') return;
                         if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
@@ -133,20 +128,24 @@ const getPieceMoves = (fen, index) => {
                     });
                     break;
                 } case "R": {
-                    let R1 = [-8, 1, 8];
-                    let R8 = [-8, -1, 8];
-                    let any = [-8, -1, 1, 8];
-                    if (getFile(index) === 1) any = R1;
-                    if (getFile(index) === 8) any = R8;
-                    any.map(x => {
+                    [1, -1].map(x => {
                         if (board_[index + x] !== ' ') return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
                         for (i = 1; i < 8; i++) {
-                            if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) {
-                                if (inRange(index + i * x)) pieceMoves.push((index + i * x));
-                            }
+                            if (Math.abs(getRank(index + i * x) - getRank(index + (i - 1) * x)) > 0) return;
                             if (board_[index + i * x] !== ' ') {
-
+                                if (inRange(index + i * x)) pieceMoves.push((index + i * x));
+                                return;
+                            }
+                            if (inRange(index + i * x)) pieceMoves.push((index + i * x));
+                        };
+                    });
+                    [8, -8].map(x => {
+                        if (board_[index + x] !== ' ') return;
+                        if (inRange(index + x)) pieceMoves.push(index + x);
+                        for (i = 1; i < 8; i++) {
+                            if (Math.abs(getFile(index + i * x) - getFile(index + (i - 1) * x)) > 0) return;
+                            if (board_[index + i * x] !== ' ') {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
                             }
@@ -156,7 +155,7 @@ const getPieceMoves = (fen, index) => {
                     break;
                 } case "p": {
                     let possible = [8];
-                    if (getRank(index) === 2) possible.push(16)
+                    if (getRank(index) === 2) possible.push(16);
                     possible.map(x => {
                         if (board_[index + x] !== ' ') return;
                         if (inRange(index + x)) pieceMoves.push((index + x));
@@ -191,7 +190,8 @@ const getPieceMoves = (fen, index) => {
                         if (Math.abs(getFile(index) - getFile(index + x)) !== 1 && Math.abs(getRank(index) - getRank(index + x)) !== 1) return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
                         for (i = 1; i < 8; i++) {
-                            if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
+                            if (Math.abs(getFile(index + i * x) - getFile(index + (i - 1) * x)) !== 1) return;
+                            // if (getFile(index + (i - 1) * x) === 1 || getFile(index + (i - 1) * x) === 8 || getRank(index + (i - 1) * x) === 1 || getRank(index + (i - 1) * x) === 8) return;
                             if (board_[index + i * x] !== ' ') {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
@@ -208,18 +208,23 @@ const getPieceMoves = (fen, index) => {
                     });
                     break;
                 } case "r": {
-                    let R1 = [-8, 1, 8];
-                    let R8 = [-8, -1, 8];
-                    let any = [-8, -1, 1, 8];
-                    if (getFile(index) === 1) any = R1;
-                    if (getFile(index) === 8) any = R8;
-                    any.map(x => {
+                    [1, -1].map(x => {
                         if (board_[index + x] !== ' ') return;
                         if (inRange(index + x)) pieceMoves.push(index + x);
                         for (i = 1; i < 8; i++) {
-                            if (getFile(index + i * x) === 8 || getFile(index + i * x) === 1) {
+                            if (Math.abs(getRank(index + i * x) - getRank(index + (i - 1) * x)) > 0) return;
+                            if (board_[index + i * x] !== ' ') {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
+                                return;
                             }
+                            if (inRange(index + i * x)) pieceMoves.push((index + i * x));
+                        };
+                    });
+                    [8, -8].map(x => {
+                        if (board_[index + x] !== ' ') return;
+                        if (inRange(index + x)) pieceMoves.push(index + x);
+                        for (i = 1; i < 8; i++) {
+                            if (Math.abs(getFile(index + i * x) - getFile(index + (i - 1) * x)) > 0) return;
                             if (board_[index + i * x] !== ' ') {
                                 if (inRange(index + i * x)) pieceMoves.push((index + i * x));
                                 return;
