@@ -119,7 +119,7 @@ for (i = 0; i < 64; i++) {
             unSelectAll();
             fen = updateFEN(fen, pieceIndex, index);
             // console.log(formatFEN(fen))
-            fen = formatFEN(fen);
+            // fen = formatFEN(fen);
             move = fen.split(' ')[1]
             displayFEN('');
             displayFEN(fen)
