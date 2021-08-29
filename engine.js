@@ -79,8 +79,8 @@ const i2Coord = index => {
 const inCheck = (fen) => {
     const space = spaceControl(fen);
     let check = [];
-    if (space[0].includes(fen.indexOf('k'))) check.push('w');
-    if (space[1].includes(fen.indexOf('K'))) check.push('b');
+    if (space[0].includes(fen.indexOf('k'))) check.push('b');
+    if (space[1].includes(fen.indexOf('K'))) check.push('w');
     if (check.length === 2) return null;
     if (check.length === 0) return false;
     return check[0];
@@ -97,19 +97,19 @@ const getPieces = (fen, color) => {
     const pieces = [];
     const board_ = board(fen);
     if (color === 'w' || color === 'W') {
-        board_.map(p => {
+        board_.map((p, i) => {
             if (p === ' ') return;
-            if (p === p.toUpperCase()) pieces.push(p);
+            if (p === p.toUpperCase()) pieces.push(i);
         })
     } else {
-        board_.map(p => {
+        board_.map((p, i) => {
             if (p === ' ') return;
-            if (p === p.toLowerCase()) pieces.push(p);
+            if (p === p.toLowerCase()) pieces.push(i);
         })
     };
     return pieces;
 }
-const formatFEN = fen => {
+const formatFEN = fen => { // WIP, feel free to create PR and assist me as this bs is hard.
     let newFEN = '';
     let rank = 8;
     let opts = fen.slice(fen.indexOf(' '));
@@ -164,6 +164,32 @@ const formatFEN = fen => {
     console.log(newFEN + opts)
     return newFEN + opts;
 }
+// getValidPieceMoves(fen, color): {pieceIndex: moveIndex[]}
+const getValidPieceMoves = (fen, color) => {
+    let validPieceMoves = {};
+    const pieces = getPieces(fen, color);
+    if (inCheck(fen, color)) {
+        pieces.map(p => {
+            validPieceMoves[p] = [];
+            let pieceMoves = getPieceMoves(fen, p);
+            pieceMoves.map(m => {
+                if (!inCheck(updateFEN(fen, p, m))) {
+                    validPieceMoves[p].push(m);
+                }
+            })
+        })
+
+    } else {
+        pieces.map(p => {
+            validPieceMoves[p] = [];
+            let pieceMoves = getPieceMoves(fen, p);
+            pieceMoves.map(m => {
+                if (inCheck(updateFEN(fen, p, m))) {return} else validPieceMoves[p].push(m);
+            })
+        })
+    };
+    return validPieceMoves;
+}
 const updateFEN = (oldFEN, pieceIndex, moveIndex) => {
     let newFEN = '';
     const board_ = board(oldFEN);
@@ -191,6 +217,7 @@ const updateFEN = (oldFEN, pieceIndex, moveIndex) => {
     return newFEN + oldFEN;
 }
 const getPieceMoves = (fen, index) => {
+    if (!inRange(index)) return [];
     const board_ = board(fen);
     const pieceMoves = [];
     board_.map((piece, i) => {
