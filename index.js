@@ -1,60 +1,67 @@
 const startpos = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 let fen = startpos;
-let copy = document.getElementById('board').children;
-let boardArr = Array.prototype.slice.call(document.getElementById('board').children);
+let copy = document.getElementById('overlay').children;
+let boardArr = Array.prototype.slice.call(document.getElementById('overlay').children);
 let move = 'w';
 const illuminateVision = fen => {
     const space = spaceControl(fen);
     space[0].map(i => {
-        document.getElementById('board').children[i].classList.add('selected');
+        document.getElementById('overlay').children[i].classList.add('whiteControl');
     });
-    // space[1].map(i => {
-    //     document.getElementById('board').children[i].classList.add('blue');
-    // });
-    // space[2].map(i => {
-    //     document.getElementById('board').children[i].classList.add('orange');
-    // });
+    space[1].map(i => {
+        document.getElementById('overlay').children[i].classList.add('blackControl');
+    });
+    space[2].map(i => {
+        document.getElementById('overlay').children[i].classList.add('allControl');
+    });
+}
+for (i = 0; i < 64; i++) {
+    if ((i % 2 === 0 && getRank(i) % 2 === 0) || (i % 2 === 1 && getRank(i) % 2 === 1)) {
+        document.getElementById('board').children[i].classList.add('whiteSquare')
+    } else {
+        document.getElementById('board').children[i].classList.add('blackSquare')
+    }
 }
 const displayFEN = fen => {
     let res = LoadFEN(fen);
     if (!res) return;
     for (i = 0; i < 64; i++) {
-        document.getElementById('board').children[i].style.backgroundImage = ''
+        document.getElementById('overlay').children[i].style.backgroundImage = ''
     }
     for (i = 0; i < 64; i++) {
-        document.getElementById('board').children[i].classList.remove('w');
-        document.getElementById('board').children[i].classList.remove('b');
+        document.getElementById('overlay').children[i].classList.remove('w');
+        document.getElementById('overlay').children[i].classList.remove('b');
     }
-    res[1].map((square, index) => {
+    res.map((square, index) => {
         switch (square) {
             case "k": {
-                document.getElementById('board').children[index].style.backgroundImage = 'url(assets/k_.svg)';
-                document.getElementById('board').children[index].classList.add('b')
+                document.getElementById('overlay').children[index].style.backgroundImage = 'url(assets/k_.svg)';
+                document.getElementById('overlay').children[index].classList.add('b')
                 break;
             }
             case "q": {
-                document.getElementById('board').children[index].style.backgroundImage = 'url(assets/q_.svg)';
-                document.getElementById('board').children[index].classList.add('b')
+                document.getElementById('overlay').children[index].style.backgroundImage = 'url(assets/q_.svg)';
+                document.getElementById('overlay').children[index].classList.add('b')
                 break;
             }
             case "b": {
-                document.getElementById('board').children[index].style.backgroundImage = 'url(assets/b_.svg)';
-                document.getElementById('board').children[index].classList.add('b')
+                document.getElementById('overlay').children[index].style.backgroundImage = 'url(assets/b_.svg)';
+                document.getElementById('overlay').children[index].classList.add('b')
                 break;
             }
             case "n": {
-                document.getElementById('board').children[index].style.backgroundImage = 'url(assets/n_.svg)';
-                document.getElementById('board').children[index].classList.add('b')
+                document.getElementById('overlay').children[index].style.backgroundImage = 'url(assets/n_.svg)';
+                document.getElementById('overlay').children[index].classList.add('b')
                 break;
             }
             case "r": {
-                document.getElementById('board').children[index].style.backgroundImage = 'url(assets/r_.svg)';
-                document.getElementById('board').children[index].classList.add('b')
+                document.getElementById('overlay').children[index].style.backgroundImage = 'url(assets/r_.svg)';
+                document.getElementById('overlay').children[index].classList.add('b')
                 break;
             }
             case "p": {
-                document.getElementById('board').children[index].style.backgroundImage = 'url(assets/p_.svg)';
-                document.getElementById('board').children[index].classList.add('b')
+                document.getElementById('overlay').children[index].style.backgroundImage = 'url(assets/p_.svg)';
+                document.getElementById('overlay').children[index].classList.add('b')
                 break;
             }
             case " ": {
@@ -62,8 +69,8 @@ const displayFEN = fen => {
                 break;
             }
             default: {
-                document.getElementById('board').children[index].style.backgroundImage = `url(assets/${square}.svg)`;
-                document.getElementById('board').children[index].classList.add('w')
+                document.getElementById('overlay').children[index].style.backgroundImage = `url(assets/${square}.svg)`;
+                document.getElementById('overlay').children[index].classList.add('w')
                 break;
             }
         }
@@ -71,6 +78,7 @@ const displayFEN = fen => {
 };
 displayFEN(startpos)
 const submit = () => {
+    unSelectAll();
     fen = document.getElementById('fen').value;
     if (fen === 'startpos') {
         displayFEN(startpos);
@@ -80,9 +88,9 @@ const submit = () => {
     displayFEN(fen);
     let res = LoadFEN(fen);
     if (!res) return;
-    move = res[2];
-    copy = document.getElementById('board').children;
-    boardArr = Array.prototype.slice.call(document.getElementById('board').children);
+    move = getMove(fen);
+    copy = document.getElementById('overlay').children;
+    boardArr = Array.prototype.slice.call(document.getElementById('overlay').children);
 }
 document.getElementById('submit').onclick = () => {
     submit();
@@ -94,30 +102,47 @@ document.addEventListener('keypress', e => {
 })
 const unSelectAll = () => {
     for (i = 0; i < 64; i++) {
-        document.getElementsByClassName('square')[i].classList.remove('selected');
-        document.getElementsByClassName('square')[i].classList.remove('MoveIndicator');
+        if (boardArr[i]) {
+            boardArr[i].classList.remove('selected');
+            boardArr[i].classList.remove('MoveIndicator');
+            boardArr[i].classList.remove('whiteControl');
+            boardArr[i].classList.remove('blackControl');
+            boardArr[i].classList.remove('allControl');
+        }
     }
 }
+let pieceIndex = -1;
 for (i = 0; i < 64; i++) {
     document.getElementsByClassName('square')[i].onclick = e => {
-        if (e.path[0].style.backgroundImage === '') {
+        let index = boardArr.indexOf(e.path[0]);
+        if (e.path[0].classList.contains('MoveIndicator')) { //Clicked square that was suggested by engine
+            unSelectAll();
+            fen = updateFEN(fen, pieceIndex, index);
+            // console.log(formatFEN(fen))
+            // fen = formatFEN(fen);
+            move = fen.split(' ')[1]
+            displayFEN('');
+            displayFEN(fen)
+            return;
+        }
+        if (e.path[0].style.backgroundImage === '') { //Square with no piece clicked
             unSelectAll();
             return;
         }
-        if (e.path[0].classList.contains(move)) {
-            if (e.path[0].classList.contains('selected')) {
+        if (e.path[0].classList.contains(move)) { //Clicked their piece
+            if (e.path[0].classList.contains('selected')) { //Clicked selected square
                 unSelectAll()
                 return;
-            } else {
-                unSelectAll()
             }
-            unSelectAll()
-            e.path[0].classList.add('selected');
-            let index = boardArr.indexOf(e.path[0]);
-            getPieceMoves(fen, index).map(move => {
-                document.getElementById('board').children[move].classList.add('MoveIndicator')
-            })
-        } else {
+            else { //wasn't selected
+                pieceIndex = index;
+                unSelectAll();
+                e.path[0].classList.add('selected');
+                getPieceMoves(fen, index).map(move => {
+                    document.getElementById('overlay').children[move].classList.add('MoveIndicator')
+                })
+            }
+        } else { //Clicked opponent's piece
             unSelectAll();
         }
     }

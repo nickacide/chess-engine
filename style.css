@@ -7,7 +7,14 @@ html, body {
 #board {
     width: 600px;
     height: 600px;
-    background-image: url(assets/board.svg);
+    display: grid;
+    grid-template-columns: repeat(8, 75px);
+    user-select: none;
+}
+#overlay {
+    width: 600px;
+    height: 600px;
+    position: absolute;
     display: grid;
     grid-template-columns: repeat(8, 75px);
     user-select: none;
@@ -22,6 +29,21 @@ html, body {
 .MoveIndicator {
     background-color: rgba(0, 255, 34, 0.5);
 }
+.whiteControl {
+    background-color: rgba(74, 255, 246, 0.521);
+}
+.blackControl {
+    background-color: rgba(0, 119, 255, 0.562);
+}
+.allControl {
+    background-color: rgba(74, 74, 255, 0.61);
+}
 .orange {
     background-color: rgba(255, 111, 0, 1);
+}
+.blackSquare {
+    background-color: #8CA2AD;
+}
+.whiteSquare {
+    background-color: white;
 }
