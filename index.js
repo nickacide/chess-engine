@@ -115,6 +115,7 @@ let pieceIndex = -1;
 for (i = 0; i < 64; i++) {
     document.getElementsByClassName('square')[i].onclick = e => {
         let index = boardArr.indexOf(e.path[0]);
+        let moves = [];
         if (e.path[0].classList.contains('MoveIndicator')) { //Clicked square that was suggested by engine
             unSelectAll();
             fen = updateFEN(fen, pieceIndex, index);
@@ -138,8 +139,17 @@ for (i = 0; i < 64; i++) {
                 pieceIndex = index;
                 unSelectAll();
                 e.path[0].classList.add('selected');
-                getPieceMoves(fen, index).map(move => {
-                    document.getElementById('overlay').children[move].classList.add('MoveIndicator')
+                validMoves = getValidPieceMoves(fen, move);
+                getPieces(fen, move).map(p => {
+                    if (p !== index) return;
+                    getPieceMoves(fen, p).map(m => {
+                        if (!validMoves[p]) return;
+                        if (validMoves[p].indexOf(m) === -1) return;
+                        moves.push(m);
+                    })
+                });
+                moves.map(m => {
+                    document.getElementById('overlay').children[m].classList.add('MoveIndicator')
                 })
             }
         } else { //Clicked opponent's piece
