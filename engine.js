@@ -78,9 +78,10 @@ const i2Coord = index => {
 };
 const inCheck = (fen) => {
     const space = spaceControl(fen);
+    const board_ = board(fen);
     let check = [];
-    if (space[0].includes(fen.indexOf('k'))) check.push('b');
-    if (space[1].includes(fen.indexOf('K'))) check.push('w');
+    if (space[0].includes(board_.indexOf('k'))) check.push('b');
+    if (space[1].includes(board_.indexOf('K'))) check.push('w');
     if (check.length === 2) return null;
     if (check.length === 0) return false;
     return check[0];
@@ -173,7 +174,7 @@ const getValidPieceMoves = (fen, color) => {
             validPieceMoves[p] = [];
             let pieceMoves = getPieceMoves(fen, p);
             pieceMoves.map(m => {
-                if (!inCheck(updateFEN(fen, p, m))) {
+                if (!inCheck(updateFEN(fen, p, m)) && inCheck(updateFEN(fen, p, m)) !== null) {
                     validPieceMoves[p].push(m);
                 }
             })
@@ -184,10 +185,20 @@ const getValidPieceMoves = (fen, color) => {
             validPieceMoves[p] = [];
             let pieceMoves = getPieceMoves(fen, p);
             pieceMoves.map(m => {
-                if (inCheck(updateFEN(fen, p, m))) {return} else validPieceMoves[p].push(m);
+                validPieceMoves[p].push(m);
             })
         })
-    };
+    }
+    //  else if (!inCheck(fen, color)) {
+    //     pieces.map(p => {
+    //         validPieceMoves[p] = [];
+    //         let pieceMoves = getPieceMoves(fen, p);
+    //         pieceMoves.map(m => {
+    //             //.replace(/ [wb] /, fen.split(' ')[1]==='w'?' b ':' w ')
+    //             if (inCheck(updateFEN(fen, p, m))) {return} else validPieceMoves[p].push(m);
+    //         })
+    //     })
+    // };
     return validPieceMoves;
 }
 const updateFEN = (oldFEN, pieceIndex, moveIndex) => {
@@ -195,7 +206,7 @@ const updateFEN = (oldFEN, pieceIndex, moveIndex) => {
     const board_ = board(oldFEN);
     const move = getMove(oldFEN);
     board_[moveIndex] = board_[pieceIndex];
-    board_[pieceIndex] = ' ';
+    board_[pieceIndex] = '1';
     oldFEN = oldFEN.slice(oldFEN.indexOf(' '), oldFEN.length).replace(/ [wb] /, move === 'w' ? ' b ' : ' w ');
     let rank = 8;
     board_.map((x, i) => {
